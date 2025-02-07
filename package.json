@@ -31,5 +31,8 @@
   "bugs": {
     "url": "https://github.com/janohealth/jano-token-verifier/issues"
   },
-  "homepage": "https://github.com/janohealth/jano-token-verifier#readme"
+  "homepage": "https://github.com/janohealth/jano-token-verifier#readme",
+  "scripts": {
+    "test": "echo \"No tests specified\" && exit 0"
+  }
 } 
