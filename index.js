@@ -1,0 +1,1 @@
+export { createVerifyTokenMiddleware } from './src/verifyToken.js'; 
