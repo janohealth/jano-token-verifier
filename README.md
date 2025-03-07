@@ -4,33 +4,51 @@ A reusable Express middleware for verifying JWT tokens in Node.js backend applic
 
 ## Installation
 
-This package is hosted on GitHub Packages. To install it, you'll need to:
+This package is hosted on GitHub Packages. To install it, follow these steps:
 
 1. **Generate a GitHub Personal Access Token (PAT):**
-   - Go to GitHub Settings → Developer settings → Personal access tokens → Generate new token
+   - Go to GitHub.com → Your Profile → Settings
+   - Navigate to Developer settings → Personal access tokens → Tokens (classic)
+   - Click "Generate new token" → "Generate new token (classic)"
+   - Give it a descriptive name (e.g., "npm packages read access")
    - Select the following scopes:
      - `read:packages` (Required to download packages)
-   - Copy your generated token
+   - Click "Generate token"
+   - Copy your generated token immediately (you won't be able to see it again!)
 
 2. **Configure npm:**
-   Create or edit `~/.npmrc` (in your home directory) and add:
+   You have two options to configure npm:
+
+   **Option A (Recommended): Configure globally**
+   Add the configuration to your global `~/.npmrc` file in your home directory:
+   ```bash
+   # Add the GitHub Package registry for @janohealth scope
+   echo "@janohealth:registry=https://npm.pkg.github.com" >> ~/.npmrc
+   
+   # Add your auth token (replace YOUR_GITHUB_PAT with your actual token)
+   echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_PAT" >> ~/.npmrc
+   ```
+
+   **Option B: Configure per project**
+   Create or edit `.npmrc` in your project directory:
    ```ini
    @janohealth:registry=https://npm.pkg.github.com
    //npm.pkg.github.com/:_authToken=YOUR_GITHUB_PAT
    ```
-   Replace `YOUR_GITHUB_PAT` with the token you generated.
+   ⚠️ Note: If you choose Option B, make sure to add `.npmrc` to your `.gitignore` file to avoid committing your token.
 
 3. **Install the package:**
    ```bash
    npm install @janohealth/jano-token-verifier
    ```
+   If the installation is successful, you'll see the package added to your `package.json` dependencies.
 
 ## Usage
 
 First, import the middleware in your Express application:
 
 ```javascript
-import { createVerifyTokenMiddleware } from 'jano-token-verifier';
+import { createVerifyTokenMiddleware } from '@janohealth/jano-token-verifier';
 import express from 'express';
 const app = express();
 ```
@@ -65,14 +83,14 @@ app.get('/public', (req, res) => {
 
 The `createVerifyTokenMiddleware` function accepts an options object with the following properties:
 
-| Option | Type | Required | Default | Description |
-|--------|------|----------|---------|-------------|
-| `secretKey` | string | Yes | - | The secret key used to verify JWT tokens |
-| `disableTokenVerification` | boolean | No | false | Set to true to bypass token verification |
-| `userProperty` | string | No | 'user' | Property name on request object to store decoded token |
-| `logger` | object | No | console | Custom logger object with info, warn, error methods |
-| `messages` | object | No | - | Custom error messages (see below) |
-| `extractToken` | function | No | - | Custom function to extract token from request |
+| Option                     | Type     | Required | Default | Description                                            |
+|----------------------------|----------|----------|---------|--------------------------------------------------------|
+| `secretKey`                | string   | Yes      | -       | The secret key used to verify JWT tokens               |
+| `disableTokenVerification` | boolean  | No       | false   | Set to true to bypass token verification               |
+| `userProperty`             | string   | No       | 'user'  | Property name on request object to store decoded token |
+| `logger`                   | object   | No       | console | Custom logger object with info, warn, error methods    |
+| `messages`                 | object   | No       | -       | Custom error messages (see below)                      |
+| `extractToken`             | function | No       | -       | Custom function to extract token from request          |
 
 ### Custom Error Messages
 
@@ -163,7 +181,7 @@ const verifyJWT = createVerifyTokenMiddleware({
 This package includes TypeScript declarations and provides full type safety:
 
 ```typescript
-import { createVerifyTokenMiddleware } from 'jano-token-verifier';
+import { createVerifyTokenMiddleware } from '@janohealth/jano-token-verifier';
 import { Request } from 'express';
 
 const verifyJWT = createVerifyTokenMiddleware({
