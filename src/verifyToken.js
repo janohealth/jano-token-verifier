@@ -25,7 +25,7 @@ export function createVerifyTokenMiddleware(options) {
     const disableTokenVerification = options.disableTokenVerification || false;
     const userProperty = options.userProperty || 'user';
     const logger = options.logger || console;
-    
+
     // Custom error messages
     const messages = {
         noToken: 'No authorization header provided',
@@ -61,13 +61,13 @@ export function createVerifyTokenMiddleware(options) {
             const decodedToken = jwt.verify(token, secretKey);
             req[userProperty] = decodedToken;
             next();
-        } catch (error) {
-            logger.info({ error: error, token: token }, 'Error decoding/verifying token');
-            if (error.name === "TokenExpiredError") {
-                return resp.status(403).json({ message: messages.expiredToken });
+        } catch (err) {
+            logger.warn({ err }, 'Error decoding/verifying token');
+            if (err.name === 'TokenExpiredError') {
+                return resp.status(401).json({ message: messages.expiredToken });
             } else {
-                return resp.status(403).json({ message: messages.invalidToken });
+                return resp.status(401).json({ message: messages.invalidToken });
             }
         }
     };
-} 
+}
