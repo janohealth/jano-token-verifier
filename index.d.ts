@@ -20,8 +20,9 @@ interface VerifyTokenMiddlewareOptions {
     logger?: Logger;
     messages?: ErrorMessages;
     extractToken?: (req: Request) => string | null;
+    validate?: (req: Request, decodedToken: any) => any;
 }
 
 export function createVerifyTokenMiddleware(
     options: VerifyTokenMiddlewareOptions
-): (req: Request, res: Response, next: NextFunction) => void; 
+): (req: Request, res: Response, next: NextFunction) => void;

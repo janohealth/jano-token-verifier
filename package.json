@@ -1,6 +1,6 @@
 {
   "name": "@janohealth/jano-token-verifier",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "A reusable middleware for Node.js backend services to verify JWT tokens",
   "main": "index.js",
   "type": "module",
