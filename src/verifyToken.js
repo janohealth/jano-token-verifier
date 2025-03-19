@@ -13,7 +13,12 @@ import jwt from 'jsonwebtoken';
  * @param {string} [options.messages.expiredToken='Session expired. Please login'] - Message for expired token.
  * @param {string} [options.messages.invalidToken='Error validating token credentials. Please relogin'] - Message for invalid token.
  * @param {function} [options.extractToken] - Custom function to extract token from request. Defaults to Bearer token extraction.
- *
+ * @param {function(Object, Object, Object): (
+ *          {passed: true} |
+ *          {errCode: number, errMsg: string}
+ *        )} [options.validate] - Optional callback to perform additional validation.
+ *        Should return {passed: true} to proceed with the request or
+ *        {errCode: number, errMsg: string} to reject with a specific error
  * @returns {function} Express middleware function.
  */
 export function createVerifyTokenMiddleware(options) {
@@ -60,6 +65,15 @@ export function createVerifyTokenMiddleware(options) {
         try {
             const decodedToken = jwt.verify(token, secretKey);
             req[userProperty] = decodedToken;
+
+            if (typeof options.validate === 'function') {
+                const result = options.validate(req, decodedToken);
+                if (!result.passed) {
+                    const errCode = result.errCode ?? '401';
+                    const errMsg = result.errMsg ?? messages.invalidToken;
+                    return resp.status(errCode).json({ message: errMsg });
+                }
+            }
             next();
         } catch (err) {
             logger.warn({ err }, 'Error decoding/verifying token');
